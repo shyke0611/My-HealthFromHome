@@ -2,18 +2,20 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-export const apiRequest = async ({ method, url, data, params }) => {
+export const apiRequest = async ({ method, url, data, params, requiresAuth = false}) => {
   try {
     const response = await axiosInstance({
       method,
       url,
       data,
       params,
+      withCredentials: requiresAuth,
     });
 
     console.log("API response (success):", response.data);

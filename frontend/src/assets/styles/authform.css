@@ -1,124 +1,152 @@
-/* 🔹 Parent Container - Ensures the Form Moves to the Right */
-.auth-wrapper {
-  display: flex;
-  justify-content: flex-end; /* Pushes the auth form to the right */
-  align-items: flex-start; /* Moves form higher */
-  width: 100%;
-  min-height: auto; /* Ensures full page height */
-  /* Adjust spacing from the right */
-  padding-top: 6vh; /* Moves the form higher */
+.MuiContainer-root {
+  max-width: 100% !important; 
+  margin: 0 !important; 
+  padding: 0 !important; 
+  width: 100vw !important; 
 }
 
-/* 🔹 Auth Container - Embedded in the Page on the Right */
+.auth-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start; 
+  width: 100%;
+  min-height: auto;
+  padding-top: 2.5%;
+}
+
 .auth-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 25vw;
-  margin-top: 0; /* Remove previous margin-top */
-  padding-right: 3%;
+  max-width: 24rem;
+  margin-top: 0; 
+  margin-right: 7rem;
 }
 
-/* 🔹 Auth Box - Prevent Expansion */
 .auth-box {
   background: rgba(255, 255, 255, 0.96);
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  padding: 1.5rem !important;
+  border-radius: 1.5rem;
+  box-shadow: 0rem 0.3rem 1rem rgba(0, 0, 0, 0.2);
   width: 100%;
   text-align: center;
-  max-height: 600px; /* Prevents it from growing too large */
-  overflow-y: auto; /* Enables scrolling inside the form if necessary */
+  max-height: fit-content;
 }
 
-/* 🔹 Responsive Fix: Adjust Layout on Small Screens */
-@media (max-width: 1024px) {
+.auth-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 2rem !important;
+}
+
+.auth-logo {
+  width: 2.5rem;
+  height: auto;
+  max-width: 50px;
+  object-fit: contain;
+}
+
+@media (max-width: 65rem) {
   .auth-wrapper {
-    justify-content: center; /* Centers form on smaller screens */
-    padding-right: 0;
-    padding-top: 8vh; /* Move it slightly lower on smaller screens */
+    justify-content: center;
+    padding-top: 2rem;
   }
 
   .auth-container {
     max-width: 320px;
+    margin-right: 0;
   }
 
   .auth-box {
-    padding: 25px;
+    padding: 50rem;
   }
 
   .footer {
-    margin-top: 3vh; /* Reduce gap for smaller screens */
+    margin-top: 3vh;
   }
 
   .auth-background-animation {
-    left: 50%; /* Move to the center */
-    transform: translateX(6%); /* Ensure it stays centered */
-    width: 120vw; /* Expand slightly for full coverage */
+    
+    transform: translateX(-50%) !important;
   }
 }
 
-/* 🔹 Title - Slightly Smaller */
 .auth-title {
-  margin-bottom: 14px !important;
   text-align: center;
-  font-size: 1.25rem;
-  font-weight: 500 !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
 }
 
-/* 🔹 Form Fields - Smaller with Spacing */
 .auth-form .MuiTextField-root {
-  margin-bottom: 10px !important; /* Space between fields */
-  width: 100%; /* Keep full width */
-  font-size: 0.9rem;
+  margin-bottom: 10rem !important; 
+  width: 100%;
+  font-size: 10rem !important;
 }
 
-/* 🔹 Button - Smaller with Spacing */
 .auth-button {
-  margin-top: 10px !important;
-  padding: 8px 0 !important;
+  margin-top: 1rem !important;
+  padding: 0.5rem 0 !important;
   font-size: 0.9rem !important;
 }
 
-/* 🔹 Reduce TextField Height */
 .auth-form .MuiTextField-root {
-  margin-bottom: 12px !important; /* Reduce spacing */
+  margin-bottom: 0.8rem !important;
   width: 100%;
-  font-size: 0.85rem; /* Slightly smaller font */
+  font-size: 220rem !important;
 }
 
-/* 🔹 Reduce Input Padding & Font Size */
 .auth-form .MuiInputBase-root {
-  font-size: 0.9rem !important; /* Smaller text */
-  height: 40px !important; /* Reduce input height */
-  padding: 10px 10px !important; /* Reduce padding inside input */
+  font-size: 1rem !important;
+  height: 2.5rem !important;
+  padding: 0.5rem 0.1rem !important;
 }
 
-/* 🔹 Reduce Label Font Size */
 .auth-form .MuiInputLabel-root {
-  font-size: 0.75rem !important; /* Smaller label text */
+  font-size: 0.9rem !important;
+  margin-top: -0.3rem !important;
 }
 
-/* 🔹 Reduce Helper Text Font Size */
 .auth-form .MuiFormHelperText-root {
-  font-size: 0.75rem !important; /* Make error messages smaller */
-  min-height: 16px !important; /* Adjust space for error text */
+  font-size: 0.7rem !important;
+  min-height: 0.5rem !important;
 }
 
-/* 🔹 Move "Already have an account?" to the Right */
 .auth-link {
-  margin-top: 8px !important;
-  text-align: right; /* Align to the right */
-  width: 100%; /* Ensure it takes full width */
-  padding-right: 5px; /* Add slight spacing from the right edge */
+  margin-top: 1rem !important;
+  text-align: right;
+  width: 100%;
+  padding-right: 2rem !important;
+  font-size: 0.9rem !important;
 }
 
 .auth-background-animation {
   position: fixed;
   top: 0;
-  left: -20%; /* Move animation slightly to the left */
-  width: 120vw; /* Extend width to compensate for shift */
-  height: 100vh;
-  z-index: -1; /* Keep it behind everything */
+  left: 50%;
+  transform: translateX(-56%);
+  width: 120vw;
+  min-width: 100vw;
+  height: 100vh; 
+  min-height: 800px; 
+  z-index: -1; 
   object-fit: cover;
+}
+
+.auth-form input:-webkit-autofill {
+  background-color: white !important;
+  box-shadow: 0 0 0px 1000px white inset !important;
+  border-color: rgba(0, 0, 0, 0.23) !important;
+}
+
+.MuiInputAdornment-root .MuiIconButton-root {
+  color: #6b6b6b;
+  margin-right: 0.2rem;
+
+}
+
+.MuiInputAdornment-root .MuiIconButton-root:hover {
+  color: #000;
 }

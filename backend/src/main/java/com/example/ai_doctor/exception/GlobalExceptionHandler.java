@@ -26,20 +26,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleValidationExceptions(MethodArgumentNotValidException ex, Locale locale) {
-        // Collect validation errors as a Map
         Map<String, String> errors = new HashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            String localizedMessage = messageSource.getMessage(error, locale); // Localized message
-            errors.put(error.getField(), localizedMessage); // Field name -> Message
+            String localizedMessage = messageSource.getMessage(error, locale);
+            errors.put(error.getField(), localizedMessage);
         }
 
-        // Return response with errors in "message" and null in "data"
         return ApiResponseBuilder.build(HttpStatus.BAD_REQUEST, errors, null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> handleAllExceptions(Exception ex) {
-        // General fallback for unhandled exceptions
         Map<String, String> errorMessage = Map.of("error", "An unexpected error occurred: " + ex.getMessage());
         return ApiResponseBuilder.build(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, null);
     }

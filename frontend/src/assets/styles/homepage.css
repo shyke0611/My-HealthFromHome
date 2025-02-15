@@ -1,71 +1,100 @@
-/* Main Container */
 .homepage-container {
   display: flex;
-  align-items: flex-start; /* Move content closer to the top */
-  justify-content: flex-start; /* Keep content slightly to the left */
-  height: 100vh; /* Full viewport height */
-  width: 100vw; /* Full viewport width */
-  overflow: hidden; /* Prevent scrolling */
-  padding: 5% 10%; /* Adjusts spacing - increase 5% to move higher */
+  align-items: center; 
+  overflow: hidden;
+  padding: 5% 10%;
   box-sizing: border-box;
 }
 
-
-/* Left Section: Text & Buttons */
 .homepage-content {
-  max-width: 500px;
+  max-width: 35rem;
   text-align: left;
+  flex: 1;
+  margin-top: -10vh;
 }
 
-/* Title Styling */
 .homepage-title {
   font-size: 2.5rem;
   font-weight: bold;
   color: #333;
-  margin-bottom: 20px; /* Increase space below title */
-  line-height: 1.4; /* Adjust line spacing */
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
 }
 
-/* Description Styling */
 .homepage-description {
   font-size: 1.2rem;
   color: #666;
-  margin-bottom: 30px; /* Increase space between description and buttons */
-  line-height: 1.6; /* Improve readability */
+  margin-bottom: 2rem;
+  line-height: 1.6;
 }
 
-/* Button Container */
 .homepage-buttons {
   display: flex;
-  gap: 20px; /* Increase space between buttons */
-  flex-wrap: wrap; /* Allows buttons to move to the next line */
+  gap: 1.5rem;
+  flex-wrap: wrap;
   justify-content: flex-start;
 }
 
 
-/* Buttons */
 .homepage-button {
   font-size: 1rem;
-  padding: 10px 20px;
-  white-space: nowrap; /* Prevents text from breaking into a new line */
-  min-width: 180px; /* Ensures consistent button width */
+  padding: 0.5rem 1rem !important;
+  white-space: nowrap;
+  min-width: 180rem;
 }
 
-/* Stack buttons on smaller screens */
-@media (max-width: 600px) {
+@media (max-width: 30rem) {
   .homepage-buttons {
-    flex-direction: column; /* Stack buttons vertically */
-    align-items: flex-start; /* Align buttons to the left */
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
-/* Right Section: Animation */
 .homepage-animation {
-  flex: 1;
+  flex: 1; 
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 800px; /* Adjust based on animation size */
+  max-width: clamp(30rem, 45vw, 50rem);
+  max-height: clamp(30vh, 55vh, 60vh);
+  overflow: hidden;
+  position: relative;
+  left: 3rem;
+  bottom: 2rem;
+}
+
+@media (max-width: 60rem) {
+  .homepage-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    position: relative;
+    height: 100vh;
+    padding: 10% 5%;
+  }
+
+  .homepage-content {
+    max-width: 90%;
+    margin-top: 0;
+    text-align: center;
+    z-index: 2;
+  }
+
+  .homepage-animation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 100vw; 
+    max-height: 100vh;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  .homepage-buttons {
+    justify-content: center;
+  }
 }
 
 

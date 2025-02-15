@@ -1,24 +1,17 @@
 import React, { useState } from "react";
-import { useSnackbar } from "notistack";
-import useAPI from "../hooks/use-api";
-import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/AuthForm";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import useAuth from "../hooks/useAuth";
 
 export default function SignupPage() {
-  const api = useAPI();
+  const { registerUser, loading } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [formErrors, setFormErrors] = useState({});
 
-  async function handleSignup(data) {
-    setFormErrors({});
-
-    const response = await api.registerUser({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      password: data.password,
-    });
+  const handleSignup = async (userData) => {
+    const response = await registerUser(userData);
 
     if (response.success) {
       enqueueSnackbar(response.message, { variant: "success" });
@@ -26,13 +19,11 @@ export default function SignupPage() {
     } else {
       if (typeof response.message === "object") {
         setFormErrors(response.message);
-      } else if (response.message) {
-        enqueueSnackbar(response.message, { variant: "error" });
       } else {
-        enqueueSnackbar("An unexpected error occurred. Please try again.", { variant: "error" });
+        enqueueSnackbar(response.message || "Signup failed. Please try again.", { variant: "error" });
       }
     }
-  }
+  };
 
   return (
     <AuthForm
@@ -48,7 +39,8 @@ export default function SignupPage() {
       linkMessage="Already have an account?"
       linkText="Login"
       linkTo="/login"
-      enabled={true}
+      enabled={!loading} 
+      loading={loading}
     />
   );
 }

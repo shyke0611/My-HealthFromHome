@@ -1,11 +1,9 @@
-/* Layout Container */
 .layout {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
   }
   
-  /* Main Content Area */
   .layout-main {
     flex: 1; 
     padding: 20px; 

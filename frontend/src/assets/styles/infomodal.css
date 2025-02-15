@@ -1,25 +1,21 @@
-/* Modal Title */
 .infoModal-title {
     font-weight: bold !important;
     text-align: center;
   }
   
-  /* Disclaimer */
   .infoModal-disclaimer {
     margin-bottom: 20px;
     line-height: 1.6;
-    color: #6c757d; /* Neutral grey for secondary text */
+    color: #6c757d;
   }
   
-  /* Section Headers */
   .infoModal-header {
     font-weight:bold !important;
     margin-top: 20px;
-    font-size: 1.25rem; /* Larger size for emphasis */
+    font-size: 1.25rem;
     color: #333;
   }
   
-  /* Paragraphs */
   .infoModal-paragraph {
     margin-bottom:20px !important;
     margin-top:10px !important;
@@ -28,7 +24,6 @@
     color: #555;
   }
   
-  /* Lists */
   .infoModal-list {
     padding-left: 20px;
     margin-bottom: 20px;
@@ -39,7 +34,6 @@
     line-height: 1.6;
   }
   
-  /* Links */
   .infoModal-link {
     text-decoration: none;
     color: #1976d2;

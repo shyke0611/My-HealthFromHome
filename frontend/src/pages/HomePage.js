@@ -2,8 +2,8 @@ import React from "react";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
-import homepageAnimation from "../assets/animations/homepage_animation.json";
-import "../assets/styles/homepage.css"; // Import external CSS file
+import homepageAnimation from "../assets/animations/homepage.json";
+import "../assets/styles/homepage.css";
 
 const HomePage = () => {
   return (
