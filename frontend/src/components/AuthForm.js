@@ -13,7 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import authAnimation from "../assets/animations/auth.json";
-import logo from "../assets/images/icon.png"; 
+import logo from "../assets/images/icon.png";
 import "../assets/styles/authform.css";
 
 export default function AuthForm({
@@ -24,6 +24,8 @@ export default function AuthForm({
   linkText,
   linkTo,
   linkMessage,
+  extraLinkText,
+  extraLinkTo,
   enabled,
   loading,
 }) {
@@ -71,14 +73,14 @@ export default function AuthForm({
                   InputProps={
                     field.type === "password"
                       ? {
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton onClick={handleTogglePassword} edge="end">
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={handleTogglePassword} edge="end">
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }
                       : {}
                   }
                 />
@@ -93,6 +95,11 @@ export default function AuthForm({
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : buttonText}
               </Button>
+              {extraLinkText && extraLinkTo && (
+                <Typography variant="body2" className="auth-extra-link">
+                  <Link to={extraLinkTo}>{extraLinkText}</Link>
+                </Typography>
+              )}
               <Typography variant="body2" className="auth-link">
                 {linkMessage} <Link to={linkTo}>{linkText}</Link>
               </Typography>

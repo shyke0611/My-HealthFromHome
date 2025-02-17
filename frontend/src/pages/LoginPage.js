@@ -19,11 +19,11 @@ export default function LoginPage() {
     } else {
       if (typeof response.message === "object") {
         setFormErrors(response.message);
-           if (response.message.verify) {
-              setShowOtpDialog(true)    
-           } else if (response.message.credentials) {
-            enqueueSnackbar(response.message.credentials, { variant: "error" });
-           }
+        if (response.message.verify) {
+          setShowOtpDialog(true)
+        } else if (response.message.credentials) {
+          enqueueSnackbar(response.message.credentials, { variant: "error" });
+        }
       } else {
         enqueueSnackbar(response.message || "Login failed. Please try again.", { variant: "error" });
       }
@@ -36,11 +36,11 @@ export default function LoginPage() {
     if (response.success) {
       enqueueSnackbar(response.message, { variant: "success" });
     } else {
-        if (response.message.verificationExpired) {
-          enqueueSnackbar(response.message.verificationExpired, { variant: "error" }); 
-        } else if(response.message.verificationInvalid)  {
-          enqueueSnackbar(response.message.verificationInvalid, { variant: "error" }); 
-       } else {
+      if (response.message.verificationExpired) {
+        enqueueSnackbar(response.message.verificationExpired, { variant: "error" });
+      } else if (response.message.verificationInvalid) {
+        enqueueSnackbar(response.message.verificationInvalid, { variant: "error" });
+      } else {
         enqueueSnackbar(response.message || "Verification failed. Please try again.", { variant: "error" });
       }
     }
@@ -67,16 +67,18 @@ export default function LoginPage() {
         linkMessage="Don't have an account?"
         linkText="Sign Up"
         linkTo="/signup"
-        enabled={!loading} 
+        extraLinkText="Forgot Password?"
+        extraLinkTo="/forgot-password"
+        enabled={!loading}
         loading={loading}
       />
 
-      <VerificationDialog 
-        open={showOtpDialog} 
-        onClose={() => setShowOtpDialog(false)} 
-        onVerify={handleVerification} 
-        onResend={handleResend} 
-        email={email} 
+      <VerificationDialog
+        open={showOtpDialog}
+        onClose={() => setShowOtpDialog(false)}
+        onVerify={handleVerification}
+        onResend={handleResend}
+        email={email}
       />
     </>
   );
