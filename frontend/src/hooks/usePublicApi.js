@@ -7,5 +7,8 @@ export default function usePublicAPI() {
     verifyUser: authService.verifyUser,
     resendVerification: authService.resendVerification,
     logoutUser: authService.logoutUser,
+    forgotPassword: authService.forgotPassword,
+    verifyResetToken: authService.verifyResetToken,
+    resetPassword: authService.resetPassword, 
   };
 }

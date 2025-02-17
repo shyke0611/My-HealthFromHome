@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import AuthForm from "../components/AuthForm";
 import VerificationDialog from "../components/VerificationDialog";
+import ForgotPasswordDialog from "../components/ForgotPasswordDialog";
 import useAuth from "../hooks/useAuth";
 import { useSnackbar } from "notistack";
 
-
 export default function LoginPage() {
-  const { loginUser, verifyUser, resendVerification, loading, showOtpDialog, setShowOtpDialog, email } = useAuth();
-  const [formErrors, setFormErrors] = useState({});
+  const { loginUser, verifyUser, forgotPassword, resendVerification, loading, email } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [forgotPasswordError, setForgotPasswordError] = useState("");
 
   const handleLogin = async (userData) => {
     const response = await loginUser(userData);
@@ -20,7 +23,7 @@ export default function LoginPage() {
       if (typeof response.message === "object") {
         setFormErrors(response.message);
         if (response.message.verify) {
-          setShowOtpDialog(true)
+          setShowOtpDialog(true);
         } else if (response.message.credentials) {
           enqueueSnackbar(response.message.credentials, { variant: "error" });
         }
@@ -30,27 +33,14 @@ export default function LoginPage() {
     }
   };
 
-  const handleVerification = async (userData) => {
-    const response = await verifyUser(userData);
-
+  const handleForgotPasswordSubmit = async (email) => {
+    setForgotPasswordError("");
+    const response = await forgotPassword(email);
     if (response.success) {
       enqueueSnackbar(response.message, { variant: "success" });
+      setForgotPasswordOpen(false);
     } else {
-      if (response.message.verificationExpired) {
-        enqueueSnackbar(response.message.verificationExpired, { variant: "error" });
-      } else if (response.message.verificationInvalid) {
-        enqueueSnackbar(response.message.verificationInvalid, { variant: "error" });
-      } else {
-        enqueueSnackbar(response.message || "Verification failed. Please try again.", { variant: "error" });
-      }
-    }
-  };
-
-  const handleResend = async (userData) => {
-    const response = await resendVerification(userData);
-
-    if (response.success) {
-      enqueueSnackbar(response.message, { variant: "success" });
+      setForgotPasswordError(response.message || "Failed to send reset link.");
     }
   };
 
@@ -68,16 +58,24 @@ export default function LoginPage() {
         linkText="Sign Up"
         linkTo="/signup"
         extraLinkText="Forgot Password?"
-        extraLinkTo="/forgot-password"
+        extraLinkOnClick={() => setForgotPasswordOpen(true)}
         enabled={!loading}
         loading={loading}
+      />
+
+      <ForgotPasswordDialog
+        open={forgotPasswordOpen}
+        onClose={() => setForgotPasswordOpen(false)}
+        onSubmit={handleForgotPasswordSubmit}
+        loading={loading}
+        errorMessage={forgotPasswordError}
       />
 
       <VerificationDialog
         open={showOtpDialog}
         onClose={() => setShowOtpDialog(false)}
-        onVerify={handleVerification}
-        onResend={handleResend}
+        onVerify={(otp) => verifyUser(otp).then(() => setShowOtpDialog(false))}
+        onResend={resendVerification}
         email={email}
       />
     </>

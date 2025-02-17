@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.ai_doctor.dto.ResetPasswordDto;
 import com.example.ai_doctor.dto.UserLoginDto;
 import com.example.ai_doctor.dto.UserRegistrationDto;
 import com.example.ai_doctor.dto.UserVerifyDto;
@@ -135,28 +136,27 @@ public class AuthController {
             authService.requestResetPassword(user);
         }
         return ApiResponseBuilder.build(HttpStatus.OK,
-        messageSource.getMessage("Success.user.resendPass", null, Locale.getDefault()));
+                messageSource.getMessage("Success.user.resendPass", null, Locale.getDefault()));
     }
 
     @GetMapping("/verify-reset-token")
     public ResponseEntity<?> verifyResetToken(@RequestParam String resetToken) {
         if (!authService.verifyResetPasswordToken(resetToken)) {
-            return ApiResponseBuilder.build(HttpStatus.BAD_REQUEST, 
-                messageSource.getMessage("Invalid.user.passToken", null, Locale.getDefault()));
+            return ApiResponseBuilder.build(HttpStatus.BAD_REQUEST,
+                    messageSource.getMessage("Invalid.user.passToken", null, Locale.getDefault()));
         }
-        return ApiResponseBuilder.build(HttpStatus.OK, 
-        messageSource.getMessage("Success.user.passToken", null, Locale.getDefault()));
+        return ApiResponseBuilder.build(HttpStatus.OK,
+                messageSource.getMessage("Success.user.passToken", null, Locale.getDefault()));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
-        if (!authService.resetPassword(token, newPassword)) {
-            return ApiResponseBuilder.build(HttpStatus.BAD_REQUEST, 
-                messageSource.getMessage("Invalid.user.passToken", null, Locale.getDefault()));
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
+        if (!authService.resetPassword(resetPasswordDto.getToken(), resetPasswordDto.getNewPassword())) {
+            return ApiResponseBuilder.build(HttpStatus.BAD_REQUEST,
+                    messageSource.getMessage("Invalid.user.passToken", null, Locale.getDefault()));
         }
         return ApiResponseBuilder.build(HttpStatus.OK,
-        messageSource.getMessage("Success.user.passReset", null, Locale.getDefault()));
+                messageSource.getMessage("Success.user.passReset", null, Locale.getDefault()));
     }
-
 
 }

@@ -25,7 +25,7 @@ export default function AuthForm({
   linkTo,
   linkMessage,
   extraLinkText,
-  extraLinkTo,
+  extraLinkOnClick,
   enabled,
   loading,
 }) {
@@ -95,9 +95,17 @@ export default function AuthForm({
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : buttonText}
               </Button>
-              {extraLinkText && extraLinkTo && (
+              {extraLinkText && (
                 <Typography variant="body2" className="auth-extra-link">
-                  <Link to={extraLinkTo}>{extraLinkText}</Link>
+                  <Link
+                    to="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      extraLinkOnClick();
+                    }}
+                  >
+                    {extraLinkText}
+                  </Link>
                 </Typography>
               )}
               <Typography variant="body2" className="auth-link">

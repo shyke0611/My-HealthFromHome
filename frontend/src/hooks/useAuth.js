@@ -10,9 +10,7 @@ export default function useAuth() {
   const [user, setUser] = useState(null);
   const publicApi = usePublicAPI();
   const userApi = useProtectedAPI();
-
   const [loading, setLoading] = useState(false);
-  const [showOtpDialog, setShowOtpDialog] = useState(false);
   const [email, setEmail] = useState("");
 
   const isLoggedIn = !!user;
@@ -24,25 +22,6 @@ export default function useAuth() {
   useEffect(() => {
     console.log("🔄 isLoggedIn changed:", isLoggedIn);
   }, [isLoggedIn]);
-
-//   /** 🔹 Always fetch user on mount */
-//   useEffect(() => {
-//     fetchCurrentUser();
-//   }, []);
-
-//   const fetchCurrentUser = async () => {
-//     setLoading(true);
-//     const response = await userApi.getCurrentUser({ params: { t: Date.now() } });
-//     setLoading(false);
-
-//     if (response.success) {
-//       setUser(response.data);
-//       console.log("✅ Fetch user success");
-//     } else {
-//       console.warn("⚠️ User not logged in or token invalid. Logging out...");
-//       handleLogout();
-//     }
-//   };
 
   const registerUser = async (userData) => {
     setLoading(true);
@@ -72,15 +51,15 @@ export default function useAuth() {
   };
 
   const verifyUser = async (otp) => {
-    const response = await publicApi.verifyUser({ email, verificationCode: otp });
-    if (response.success) {
-      setShowOtpDialog(false);
-    }
-    return response;
+    return await publicApi.verifyUser({ email, verificationCode: otp });
   };
 
   const resendVerification = async () => {
     return await publicApi.resendVerification(email);
+  };
+
+  const forgotPassword = async (email) => {
+    return await publicApi.forgotPassword(email);
   };
 
   const handleLogout = () => {
@@ -92,8 +71,6 @@ export default function useAuth() {
   const handleLogin = (response) => {
     console.log("🔹 Login successful. Fetching user...");
     setUser(response.data);
-    console.log(user);
-    // fetchCurrentUser();
     navigate("/chat");
   };
 
@@ -105,9 +82,8 @@ export default function useAuth() {
     logoutUser,
     verifyUser,
     resendVerification,
+    forgotPassword,
     loading,
-    showOtpDialog,
-    setShowOtpDialog,
     email,
   };
 }
