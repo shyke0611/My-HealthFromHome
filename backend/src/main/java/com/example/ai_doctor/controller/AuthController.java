@@ -2,6 +2,7 @@ package com.example.ai_doctor.controller;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,7 @@ public class AuthController {
             return ApiResponseBuilder.buildFieldError(HttpStatus.CONFLICT, "email",
                     messageSource.getMessage("Unique.user.email", null, Locale.getDefault()));
         }
-        authService.signup(userRegDto);
+        CompletableFuture.runAsync(() -> authService.signup(userRegDto));
         return ApiResponseBuilder.build(HttpStatus.CREATED,
                 messageSource.getMessage("Success.user.registered", null, Locale.getDefault()));
 
@@ -133,7 +134,7 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
-            authService.requestResetPassword(user);
+            CompletableFuture.runAsync(() -> authService.requestResetPassword(user));
         }
         return ApiResponseBuilder.build(HttpStatus.OK,
                 messageSource.getMessage("Success.user.resendPass", null, Locale.getDefault()));
