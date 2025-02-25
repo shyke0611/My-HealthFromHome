@@ -1,6 +1,7 @@
 package com.example.ai_doctor.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -87,10 +88,9 @@ public class AuthService {
     public void requestResetPassword(User user) {
         String resetToken = UUID.randomUUID().toString();
         user.setResetPasswordToken(resetToken);
-        // hashed version for later
-        // String rawToken = UUID.randomUUID().toString();
-        // String hashedToken = passwordEncoder.encode(rawToken);
-        // user.setResetPasswordToken(hashedToken);
+        String rawToken = UUID.randomUUID().toString();
+        String hashedToken = passwordEncoder.encode(rawToken);
+        user.setResetPasswordToken(hashedToken);
         user.setResetPasswordTokenExpiresAt(LocalDateTime.now().plusMinutes(15));
         userRepository.save(user);
         sendPasswordResetEmail(user);
@@ -117,6 +117,7 @@ public class AuthService {
         return true;
     }
 
+    @Async 
     private void sendVerificationEmail(User user) {
         String subject = "My HealhFromHome - Account Verification";
         String htmlTemplate = loadHtmlTemplate("email-templates/verification-email.html");
@@ -130,6 +131,7 @@ public class AuthService {
         }
     }
 
+    @Async 
     private void sendPasswordResetEmail(User user) {
         String subject = "Reset Your Password";
         String resetUrl = frontendDevUrl + "/reset-password?token=" + user.getResetPasswordToken();

@@ -150,3 +150,16 @@
 .MuiInputAdornment-root .MuiIconButton-root:hover {
   color: #000;
 }
+
+.auth-extra-link, .auth-link {
+  text-align: center;
+  width: 100%;
+  display: block;
+  margin-top: 0.8rem !important;
+  font-size: 0.9rem !important;
+}
+
+.auth-extra-link {
+  margin-bottom: 0.5rem !important;
+}
+
