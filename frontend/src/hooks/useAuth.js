@@ -62,6 +62,14 @@ export default function useAuth() {
     return await publicApi.forgotPassword(email);
   };
 
+  const verifyResetToken = async (token) => {
+    return await publicApi.verifyResetToken(token);
+  };
+
+  const resetPassword = async ({ token, newPassword }) => {
+    return await publicApi.resetPassword({ token, newPassword });
+  };
+
   const handleLogout = () => {
     removeCookie("authToken", { path: "/" });
     setUser(null);
@@ -83,6 +91,8 @@ export default function useAuth() {
     verifyUser,
     resendVerification,
     forgotPassword,
+    verifyResetToken,
+    resetPassword, 
     loading,
     email,
   };

@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ChatPage from "./pages/ChatPage";
 import SummaryPage from "./pages/SummaryPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const App = () => {
   console.log("App is rendering");
@@ -54,6 +55,8 @@ const App = () => {
             </Layout>
           }
         />
+        <Route path="/reset-password"
+          element={<ResetPasswordPage />} />
       </Routes>
     </Router>
   );

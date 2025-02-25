@@ -88,10 +88,9 @@ public class AuthService {
     public void requestResetPassword(User user) {
         String resetToken = UUID.randomUUID().toString();
         user.setResetPasswordToken(resetToken);
-        // hashed version for later
-        // String rawToken = UUID.randomUUID().toString();
-        // String hashedToken = passwordEncoder.encode(rawToken);
-        // user.setResetPasswordToken(hashedToken);
+        String rawToken = UUID.randomUUID().toString();
+        String hashedToken = passwordEncoder.encode(rawToken);
+        user.setResetPasswordToken(hashedToken);
         user.setResetPasswordTokenExpiresAt(LocalDateTime.now().plusMinutes(15));
         userRepository.save(user);
         sendPasswordResetEmail(user);

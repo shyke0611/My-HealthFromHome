@@ -33,6 +33,31 @@ export default function LoginPage() {
     }
   };
 
+  const handleVerification = async (otpCode) => {
+    const response = await verifyUser(otpCode);
+
+    if (response.success) {
+      enqueueSnackbar(response.message, { variant: "success" });
+      setShowOtpDialog(false);
+    } else {
+      if (response.message.verificationExpired) {
+        enqueueSnackbar(response.message.verificationExpired, { variant: "error" });
+      } else if (response.message.verificationInvalid) {
+        enqueueSnackbar(response.message.verificationInvalid, { variant: "error" });
+      } else {
+        enqueueSnackbar(response.message || "Verification failed. Please try again.", { variant: "error" });
+      }
+    }
+  };
+
+  const handleResend = async (userData) => {
+    const response = await resendVerification(userData);
+
+    if (response.success) {
+      enqueueSnackbar(response.message, { variant: "success" });
+    }
+  };
+
   const handleForgotPasswordSubmit = async (email) => {
     setForgotPasswordError("");
     const response = await forgotPassword(email);
@@ -74,8 +99,8 @@ export default function LoginPage() {
       <VerificationDialog
         open={showOtpDialog}
         onClose={() => setShowOtpDialog(false)}
-        onVerify={(otp) => verifyUser(otp).then(() => setShowOtpDialog(false))}
-        onResend={resendVerification}
+        onVerify={handleVerification}
+        onResend={handleResend}
         email={email}
       />
     </>

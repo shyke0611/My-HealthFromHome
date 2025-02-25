@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -10,6 +10,12 @@ export default function VerificationDialog({ open, onClose, onVerify, onResend, 
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const inputRefs = useRef([]);
   const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setOtp(new Array(6).fill(""));
+    }
+  }, [open]);
 
   const handleChange = (index, event) => {
     const value = event.target.value;
@@ -30,10 +36,14 @@ export default function VerificationDialog({ open, onClose, onVerify, onResend, 
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const otpCode = otp.join("");
     if (otpCode.length === 6) {
-      onVerify(otpCode);
+      const success = await onVerify(otpCode);
+      if (success) {
+        setOtp(new Array(6).fill("")); // ✅ Reset on success
+        onClose();
+      }
     }
   };
 
@@ -47,8 +57,8 @@ export default function VerificationDialog({ open, onClose, onVerify, onResend, 
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle className="verification-title">Enter Verification Code</DialogTitle>
       <DialogContent className="verification-content">
-        <p className="verification-text">Account is not verified. A 6-digit code was sent to your email.</p>
-        
+        <p className="verification-text">A 6-digit code was sent to your email.</p>
+
         <div className="otp-container">
           {otp.map((digit, index) => (
             <input
@@ -83,7 +93,7 @@ export default function VerificationDialog({ open, onClose, onVerify, onResend, 
           Cancel
         </Button>
         <Button onClick={handleSubmit} color="primary" disabled={otp.join("").length !== 6 || resending}>
-         Verify
+          Verify
         </Button>
       </DialogActions>
     </Dialog>
