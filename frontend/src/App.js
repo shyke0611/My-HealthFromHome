@@ -7,6 +7,7 @@ import SignupPage from "./pages/SignupPage";
 import ChatPage from "./pages/ChatPage";
 import SummaryPage from "./pages/SummaryPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import RequireAuth from "./components/RequireAuth";
 
 const App = () => {
   console.log("App is rendering");
@@ -14,49 +15,16 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* All routes use the Layout */}
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <HomePage />
-            </Layout>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <Layout>
-              <LoginPage />
-            </Layout>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <Layout>
-              <SignupPage />
-            </Layout>
-          }
-        />
-        <Route
-          path="/chat"
-          element={
-            <Layout>
-              <ChatPage />
-            </Layout>
-          }
-        />
-        <Route
-          path="/summary"
-          element={
-            <Layout>
-              <SummaryPage />
-            </Layout>
-          }
-        />
-        <Route path="/reset-password"
-          element={<ResetPasswordPage />} />
+        <Route path="/" element={<Layout><HomePage /></Layout>} />
+        <Route path="/login" element={<Layout><LoginPage /></Layout>} />
+        <Route path="/signup" element={<Layout><SignupPage /></Layout>} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Protected Routes */}
+        <Route element={<RequireAuth />}>
+          <Route path="/chat" element={<Layout><ChatPage /></Layout>} />
+          <Route path="/summary" element={<Layout><SummaryPage /></Layout>} />
+        </Route>
       </Routes>
     </Router>
   );
