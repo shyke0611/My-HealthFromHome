@@ -22,11 +22,16 @@ export const AuthProvider = ({ children }) => {
       const response = await publicApi.getCurrentUser();
       if (response.success) {
         setUser(response.data.user);
+      } else {
       }
       setLoading(false);
     };
     fetchUser();
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider value={{ user, setUser, loading }}>

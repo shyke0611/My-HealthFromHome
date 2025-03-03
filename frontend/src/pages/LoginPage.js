@@ -6,7 +6,7 @@ import useAuth from "../hooks/useAuth";
 import { useSnackbar } from "notistack";
 
 export default function LoginPage() {
-  const { loginUser, verifyUser, forgotPassword, resendVerification, loading, email, user } = useAuth();
+  const { loginUser, verifyUser, forgotPassword, resendVerification, loading, email } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
   const [showOtpDialog, setShowOtpDialog] = useState(false);
@@ -18,9 +18,7 @@ export default function LoginPage() {
     const response = await loginUser(userData);
 
     if (response.success) {
-      // enqueueSnackbar(response.message, { variant: "success" });
-      enqueueSnackbar(`Welcome, ${response.data?.user?.firstName || "User"}!`, { variant: "success" });
-
+      enqueueSnackbar(response.message, { variant: "success" });
     } else {
       if (typeof response.message === "object") {
         setFormErrors(response.message);
