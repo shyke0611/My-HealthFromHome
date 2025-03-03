@@ -122,13 +122,12 @@ public class AuthController {
         if (refreshToken.isEmpty()) {
             return ApiResponseBuilder.build(HttpStatus.UNAUTHORIZED, "No refresh token found");
         }
-
-        String email = jwtService.extractUsername(refreshToken);
-        if (email == null || jwtService.isTokenExpired(refreshToken)) {
+        String userId = jwtService.extractUserId(refreshToken);
+        if (userId == null || jwtService.isTokenExpired(refreshToken)) {
             return ApiResponseBuilder.build(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
         }
 
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return ApiResponseBuilder.build(HttpStatus.UNAUTHORIZED, "User not found");
         }

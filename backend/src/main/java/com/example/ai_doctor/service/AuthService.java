@@ -56,14 +56,15 @@ public class AuthService {
     }
 
     public boolean authenticate(UserLoginDto input) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        User user = userRepository.findByEmail(input.getEmail()).orElse(null);
+        if (user == null) return false;
+    
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(user.getId(), input.getPassword()) 
+        );
+        return true;
     }
+    
 
     public void verifyUser(User user) {
         user.setEnabled(true);

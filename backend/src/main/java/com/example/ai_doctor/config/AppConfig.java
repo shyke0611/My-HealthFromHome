@@ -21,8 +21,8 @@ public class AppConfig {
 
     @Bean
     UserDetailsService userDetailsService() {
-        return email -> userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with: + email"));
+        return userId -> userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
     }
 
     @Bean
@@ -45,4 +45,3 @@ public class AppConfig {
         return authProvider;
     }
 }
-

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.example.ai_doctor.model.User;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,8 +30,15 @@ public class JwtService {
     @Value("${security.jwt.refresh-expiration}")
     private long refreshExpiration;
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractUserId(String token) {
+        try {
+            String userId = extractClaim(token, Claims::getSubject);
+            System.out.println("🔍 Extracted user ID from JWT: " + userId);
+            return userId;
+        } catch (Exception e) {
+            System.out.println("🚨 Error extracting user ID from JWT: " + e.getMessage());
+            return null;
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -37,19 +46,19 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails, accessExpiration);
+    public String generateAccessToken(User user) {
+        return generateToken(new HashMap<>(), user, accessExpiration);
+    }
+    
+    public String generateRefreshToken(User user) {
+        return generateToken(new HashMap<>(), user, refreshExpiration);
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails, refreshExpiration);
-    }
-
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+    private String generateToken(Map<String, Object> extraClaims, User user, long expiration) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setHeaderParam("typ", "JWT")
-                .setSubject(userDetails.getUsername())
+                .setSubject(user.getId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -57,8 +66,8 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        final String userId = extractUserId(token);
+        return (userId.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     public boolean isTokenExpired(String token) {
