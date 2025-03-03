@@ -1,27 +1,16 @@
 import { useState, useEffect } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import usePublicAPI from "./usePublicApi";
-import useProtectedAPI from "./useProtectedApi";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function useAuth() {
   const navigate = useNavigate();
-  const [cookies, setCookie, removeCookie] = useCookies(["authToken"]);
-  const [user, setUser] = useState(null);
   const publicApi = usePublicAPI();
-  const userApi = useProtectedAPI();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const { user, setUser } = useAuthContext();
 
   const isLoggedIn = !!user;
-
-  useEffect(() => {
-    console.log("🍪 Current cookies:", cookies);
-  }, [cookies]);
-
-  useEffect(() => {
-    console.log("🔄 isLoggedIn changed:", isLoggedIn);
-  }, [isLoggedIn]);
 
   const registerUser = async (userData) => {
     setLoading(true);
@@ -37,7 +26,8 @@ export default function useAuth() {
     setLoading(false);
 
     if (response.success) {
-      handleLogin(response);
+      setUser(response.data.user);
+      navigate("/chat");
     }
     return response;
   };
@@ -45,7 +35,8 @@ export default function useAuth() {
   const logoutUser = async () => {
     const response = await publicApi.logoutUser();
     if (response.success) {
-      handleLogout();
+      setUser(null); 
+      navigate("/");
     }
     return response;
   };
@@ -70,21 +61,7 @@ export default function useAuth() {
     return await publicApi.resetPassword({ token, newPassword });
   };
 
-  const handleLogout = () => {
-    removeCookie("authToken", { path: "/" });
-    setUser(null);
-    navigate("/");
-  };
-
-  const handleLogin = (response) => {
-    console.log("🔹 Login successful. Fetching user...");
-    setUser(response.data);
-    navigate("/chat");
-  };
-
   return {
-    isLoggedIn,
-    user,
     registerUser,
     loginUser,
     logoutUser,
@@ -95,5 +72,7 @@ export default function useAuth() {
     resetPassword, 
     loading,
     email,
+    user,
+    isLoggedIn,
   };
 }

@@ -34,7 +34,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
 
-        UserResponse userResponse = new UserResponse(user.getFirstName(), user.getLastName(), user.getEmail());
+        UserResponse userResponse = new UserResponse(user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole().name());
         return ApiResponseBuilder.build(
                 HttpStatus.OK,
                 messageSource.getMessage("Success.user.currentUser", null, Locale.getDefault()),

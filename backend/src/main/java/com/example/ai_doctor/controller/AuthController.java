@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.ai_doctor.dto.ResetPasswordDto;
@@ -71,9 +72,18 @@ public class AuthController {
                     messageSource.getMessage("Invalid.user.credentials", null, Locale.getDefault()));
         }
 
-        String jwtToken = jwtService.generateToken(user);
-        response.addCookie(jwtService.generateAuthCookie(jwtToken));
-        UserResponse userResponse = new UserResponse(user.getFirstName(), user.getLastName(), user.getEmail());
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        response.addCookie(jwtService.generateAccessCookie(accessToken));
+        response.addCookie(jwtService.generateRefreshCookie(refreshToken));
+
+        UserResponse userResponse = new UserResponse(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole().name());
+
         return ApiResponseBuilder.build(
                 HttpStatus.OK,
                 messageSource.getMessage("Success.user.login", null, Locale.getDefault()),
@@ -104,6 +114,33 @@ public class AuthController {
                 messageSource.getMessage("Success.user.verify", null, Locale.getDefault()));
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(
+            @CookieValue(value = "refreshToken", defaultValue = "") String refreshToken,
+            HttpServletResponse response) {
+
+        if (refreshToken.isEmpty()) {
+            return ApiResponseBuilder.build(HttpStatus.UNAUTHORIZED, "No refresh token found");
+        }
+
+        String email = jwtService.extractUsername(refreshToken);
+        if (email == null || jwtService.isTokenExpired(refreshToken)) {
+            return ApiResponseBuilder.build(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
+        }
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ApiResponseBuilder.build(HttpStatus.UNAUTHORIZED, "User not found");
+        }
+
+        String newAccessToken = jwtService.generateAccessToken(user);
+        response.addCookie(jwtService.generateAccessCookie(newAccessToken));
+
+        return ApiResponseBuilder.build(
+                HttpStatus.OK,
+                "Access token refreshed successfully");
+    }
+
     @PostMapping("/resendVerification")
     public ResponseEntity<?> resendVerificationCode(@Valid @RequestParam String email) {
         User user = userRepository.findByEmail(email).orElse(null);
@@ -125,8 +162,11 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        response.addCookie(jwtService.generateDeleteAuthCookie());
-        return ApiResponseBuilder.build(HttpStatus.OK,
+        response.addCookie(jwtService.generateDeleteAccessCookie());
+        response.addCookie(jwtService.generateDeleteRefreshCookie());
+
+        return ApiResponseBuilder.build(
+                HttpStatus.OK,
                 messageSource.getMessage("Success.user.logout", null, Locale.getDefault()));
     }
 
@@ -158,6 +198,24 @@ public class AuthController {
         }
         return ApiResponseBuilder.build(HttpStatus.OK,
                 messageSource.getMessage("Success.user.passReset", null, Locale.getDefault()));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        UserResponse userResponse = new UserResponse(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole().name());
+
+        return ApiResponseBuilder.build(
+                HttpStatus.OK,
+                messageSource.getMessage("Success.user.currentUser", null, Locale.getDefault()),
+                userResponse);
     }
 
 }

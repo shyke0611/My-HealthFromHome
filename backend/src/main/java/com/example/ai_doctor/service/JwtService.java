@@ -7,12 +7,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-
-import java.security.Key;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +22,11 @@ public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
-    @Value("${security.jwt.expiration-time}")
-    private long jwtExpiration;
+    @Value("${security.jwt.access-expiration}")
+    private long accessExpiration;
+
+    @Value("${security.jwt.refresh-expiration}")
+    private long refreshExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -35,26 +37,18 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails, accessExpiration);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
-    public long getExpirationTime() {
-        return jwtExpiration;
-    }
-
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration) {
-        return Jwts
-                .builder()
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+        return Jwts.builder()
                 .setClaims(extraClaims)
-                .setHeaderParam("typ", "JWT") 
+                .setHeaderParam("typ", "JWT")
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
@@ -67,7 +61,7 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -92,28 +86,37 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Cookie generateAuthCookie(String jwtToken) {
-        Cookie cookie = new Cookie("jwt", jwtToken);
+    public Cookie generateAccessCookie(String accessToken) {
+        Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);   
-        cookie.setPath("/");     
-        cookie.setMaxAge((int) jwtExpiration / 1000);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) accessExpiration / 1000);
         cookie.setAttribute("SameSite", "None");
-        if (isLocalEnvironment()) {
-            cookie.setSecure(false);
-        } else {
-            cookie.setSecure(true);
-        }
         return cookie;
     }
 
-    private boolean isLocalEnvironment() {
-        String env = System.getenv("SPRING_ENV");
-        return env == null || env.equals("development") || env.equals("local");
+    public Cookie generateRefreshCookie(String refreshToken) {
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) refreshExpiration / 1000);
+        cookie.setAttribute("SameSite", "None");
+        return cookie;
     }
 
-    public Cookie generateDeleteAuthCookie() {
-        Cookie cookie = new Cookie("jwt", null);
+    public Cookie generateDeleteRefreshCookie() {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        return cookie;
+    }
+
+    public Cookie generateDeleteAccessCookie() {
+        Cookie cookie = new Cookie("accessToken", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");

@@ -36,7 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private String extractJwtFromCookies(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("jwt".equals(cookie.getName())) { // ✅ Ensure JWT is retrieved from the cookie
+                if ("accessToken".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
@@ -50,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         
-        final String jwt = extractJwtFromCookies(request); // ✅ Extract JWT from cookies
+        final String jwt = extractJwtFromCookies(request);
 
         if (jwt == null) {
             filterChain.doFilter(request, response);
