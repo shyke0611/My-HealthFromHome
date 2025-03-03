@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -13,6 +14,7 @@ const App = () => {
   console.log("App is rendering");
 
   return (
+    <AuthProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Layout><HomePage /></Layout>} />
@@ -27,6 +29,7 @@ const App = () => {
         </Route>
       </Routes>
     </Router>
+    </AuthProvider>
   );
 };
 

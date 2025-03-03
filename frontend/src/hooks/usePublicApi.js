@@ -10,5 +10,7 @@ export default function usePublicAPI() {
     forgotPassword: authService.forgotPassword,
     verifyResetToken: authService.verifyResetToken,
     resetPassword: authService.resetPassword, 
+    getCurrentUser: authService.getCurrentUser,
+    refreshToken: authService.refreshToken,
   };
 }

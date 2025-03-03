@@ -11,13 +11,16 @@ const authService = {
 
   resendVerification: (email) => apiRequest({ method: "POST", url: `/auth/resendVerification?email=${encodeURIComponent(email)}` }),
 
-  getCurrentUser: () => apiRequest({ method: "GET", url: "/user/me", requiresAuth: true }),
+  getCurrentUser: () => apiRequest({ method: "GET", url: "/auth/me", requiresAuth: true }),
 
   forgotPassword: (email) => apiRequest({ method: "POST", url: `/auth/forgot-password?email=${encodeURIComponent(email)}` }),
 
   verifyResetToken: (resetToken) => apiRequest({ method: "GET", url: `/auth/verify-reset-token?resetToken=${encodeURIComponent(resetToken)}` }),
 
   resetPassword: (resetPasswordDto) => apiRequest({ method: "POST", url: "/auth/reset-password", data: resetPasswordDto }),
+
+  refreshToken: () => apiRequest({ method: "POST", url: "/auth/refresh" }),
+
 };
 
 export default authService;
