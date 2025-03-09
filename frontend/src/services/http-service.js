@@ -11,31 +11,37 @@ const axiosInstance = axios.create({
 const refreshAccessToken = async () => {
   try {
     const response = await axiosInstance.post("/auth/refresh");
-    console.log("Access token refreshed successfully");
     return response.data;
   } catch (error) {
-    console.error("Error refreshing token", error);
     return null;
   }
 };
 
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+export const setupAxiosInterceptors = (setUser) => {
+  axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-    if (error.response?.status === 401 && originalRequest.url !== "/auth/login") {
-      console.warn("Access token expired. Refreshing...");
+      if (error.response?.status === 401 && originalRequest.url !== "/auth/login" && !originalRequest._retry) {
+        originalRequest._retry = true;
 
-      const refreshedToken = await refreshAccessToken();
-      if (refreshedToken) {
-        return axiosInstance.request(originalRequest);
+        const refreshedToken = await refreshAccessToken();
+
+        if (refreshedToken) {
+          return axiosInstance.request(originalRequest);
+        } else {
+          setUser(null);
+          window.location.href = "/login"; 
+          return Promise.reject(error);
+        }
       }
-    }
 
-    return Promise.reject(error);
-  }
-);
+      return Promise.reject(error);
+    }
+  );
+};
+
 
 export const apiRequest = async ({ method, url, data, params }) => {
   try {

@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { AuthProvider } from "./context/AuthContext";
 import { SnackbarProvider } from "notistack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -27,16 +28,18 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider
-        maxSnack={1}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-      >
-        <App />
-      </SnackbarProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider
+          maxSnack={1}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+        >
+          <App />
+        </SnackbarProvider>
+      </ThemeProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

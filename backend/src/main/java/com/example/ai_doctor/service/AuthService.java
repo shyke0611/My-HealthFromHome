@@ -56,9 +56,13 @@ public class AuthService {
     }
 
     public boolean authenticate(UserLoginDto input) {
+        User user = userRepository.findByEmail(input.getEmail()).orElse(null);
+        if (user == null)
+            return false;
+
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
+                    new UsernamePasswordAuthenticationToken(user.getId(), input.getPassword()));
             return true;
         } catch (Exception e) {
             return false;
@@ -107,7 +111,8 @@ public class AuthService {
         }
 
         User user = userRepository.findByResetPasswordToken(resetToken).orElse(null);
-        if (user == null) return false;
+        if (user == null)
+            return false;
 
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetPasswordToken(null);
@@ -117,7 +122,7 @@ public class AuthService {
         return true;
     }
 
-    @Async 
+    @Async
     private void sendVerificationEmail(User user) {
         String subject = "My HealhFromHome - Account Verification";
         String htmlTemplate = loadHtmlTemplate("email-templates/verification-email.html");
@@ -131,7 +136,7 @@ public class AuthService {
         }
     }
 
-    @Async 
+    @Async
     private void sendPasswordResetEmail(User user) {
         String subject = "Reset Your Password";
         String resetUrl = frontendDevUrl + "/reset-password?token=" + user.getResetPasswordToken();
