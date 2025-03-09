@@ -141,7 +141,7 @@ export default function ProfileDialog({ open, onClose }) {
                 {isUser && (
                     <>
                         <Divider sx={{ margin: "10px 0" }} />
-                        <Typography variant="h6">Change Password</Typography>
+                        <Typography variant="h6" sx={{ margin: "10px 0" }}>Change Password</Typography>
 
                         {[{ name: "oldPassword", label: "Old Password" }, { name: "newPassword", label: "New Password" }].map(({ name, label }) => (
                             <div key={name}>
