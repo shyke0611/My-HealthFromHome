@@ -73,6 +73,7 @@ export default function useAuth() {
     loading,
     email,
     user,
+    setUser,
     isLoggedIn,
   };
 }

@@ -1,7 +1,9 @@
-import authService from "../services/authService";
+import userService from "../services/userService";
 
 export default function useProtectedAPI() {
   return {
-    getCurrentUser: authService.getCurrentUser,
+    updateUserName: userService.updateUserName,
+    updateUserEmail: userService.updateUserEmail,
+    updateUserPassword: userService.updateUserPassword,
   };
 }

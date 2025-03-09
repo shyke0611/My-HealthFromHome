@@ -6,9 +6,6 @@ import com.example.ai_doctor.dto.ChangePasswordDto;
 import com.example.ai_doctor.model.User;
 import com.example.ai_doctor.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

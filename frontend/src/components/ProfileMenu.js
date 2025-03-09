@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Menu, MenuItem, IconButton, Avatar, Tooltip } from "@mui/material";
 import useAuth from "../hooks/useAuth";
 import { useSnackbar } from "notistack";
+import ProfileDialog from "./ProfileDialog";
 
 export default function ProfileMenu({ isInDrawer = false }) {
   const { user, logoutUser } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isProfileDialogOpen, setProfileDialogOpen] = useState(false);
 
   const handleMenuOpen = (event) => {
     event.stopPropagation();
@@ -37,7 +39,6 @@ export default function ProfileMenu({ isInDrawer = false }) {
         <IconButton onClick={handleMenuOpen}>
           <Avatar>
             {user?.firstName?.charAt(0)}
-            {user?.lastName?.charAt(0)}
           </Avatar>
         </IconButton>
       </Tooltip>
@@ -50,9 +51,12 @@ export default function ProfileMenu({ isInDrawer = false }) {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+        <MenuItem onClick={() => setProfileDialogOpen(true)}>Profile</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
+
+      {/* Profile Dialog */}
+      <ProfileDialog open={isProfileDialogOpen} onClose={() => setProfileDialogOpen(false)} />
     </div>
   );
 }
