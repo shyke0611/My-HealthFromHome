@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setupAxiosInterceptors(setUser);
     const fetchUser = async () => {
       setLoading(true);
       const response = await publicApi.getCurrentUser();
@@ -29,8 +28,18 @@ export const AuthProvider = ({ children }) => {
       }
       setLoading(false);
     };
+
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      console.log("User logged in - Setting up Axios interceptors...");
+      setupAxiosInterceptors(setUser);
+    } else {
+      console.log("User logged out - Interceptors remain inactive.");
+    }
+  }, [user]);
 
   if (loading) {
     return <div>Loading...</div>;
