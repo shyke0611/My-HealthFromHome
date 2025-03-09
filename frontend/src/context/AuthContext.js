@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import usePublicAPI from "../hooks/usePublicApi";
+import { setupAxiosInterceptors } from "../services/http-service";
 
 export const AuthContext = createContext(null);
 
@@ -17,12 +18,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setupAxiosInterceptors(setUser);
     const fetchUser = async () => {
       setLoading(true);
       const response = await publicApi.getCurrentUser();
       if (response.success) {
         setUser(response.data.user);
       } else {
+        setUser(null);
       }
       setLoading(false);
     };

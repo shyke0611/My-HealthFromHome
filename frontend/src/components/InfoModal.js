@@ -8,16 +8,14 @@ import {
   Button,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import "../assets/styles/infomodal.css"; 
+import "../assets/styles/infomodal.css";
 
 const InfoModal = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onClose={onClose} scroll="paper">
       {/* Dialog Title */}
-      <DialogTitle>
-        <Typography variant="h5" className="infoModal-title">
-          Help Center
-        </Typography>
+      <DialogTitle variant="h5" className="infoModal-title">
+        Help Center
       </DialogTitle>
 
       {/* Dialog Content */}
