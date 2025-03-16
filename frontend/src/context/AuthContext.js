@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import usePublicAPI from "../hooks/usePublicApi";
-import { setupAxiosInterceptors } from "../services/http-service";
+import { setupAxiosInterceptors, refreshAccessToken } from "../services/http-service";
 
 export const AuthContext = createContext(null);
 
@@ -16,30 +16,37 @@ export const AuthProvider = ({ children }) => {
   const publicApi = usePublicAPI();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isFetchingRef = useRef(false);
 
   useEffect(() => {
     const fetchUser = async () => {
-      setLoading(true);
-      const response = await publicApi.getCurrentUser();
-      if (response.success) {
-        setUser(response.data.user);
-      } else {
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+      try {
+        let response = await publicApi.getCurrentUser();
+        if (!response.success) {
+          const refreshedToken = await refreshAccessToken();
+          if (refreshedToken) {
+            response = await publicApi.getCurrentUser();
+          }
+        }
+
+        if (response.success) {
+          setUser(response.data.user);
+          setupAxiosInterceptors(setUser);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
         setUser(null);
+      } finally {
+        isFetchingRef.current = false;
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchUser();
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      console.log("User logged in - Setting up Axios interceptors...");
-      setupAxiosInterceptors(setUser);
-    } else {
-      console.log("User logged out - Interceptors remain inactive.");
-    }
-  }, [user]);
 
   if (loading) {
     return <div>Loading...</div>;

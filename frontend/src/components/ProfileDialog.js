@@ -23,7 +23,7 @@ import useUser from "../hooks/useUser";
 
 export default function ProfileDialog({ open, onClose }) {
     const { user } = useAuth();
-    const { updateUserName, updateUserEmail, updateUserPassword } = useUser();
+    const { updateUserName, updateUserPassword } = useUser();
     const { enqueueSnackbar } = useSnackbar();
 
     const isUser = user?.role === "USER";
@@ -34,7 +34,6 @@ export default function ProfileDialog({ open, onClose }) {
     const [formData, setFormData] = useState({
         firstName: user?.firstName || "",
         lastName: user?.lastName || "",
-        email: user?.email || "",
         oldPassword: "",
         newPassword: "",
     });
@@ -48,13 +47,6 @@ export default function ProfileDialog({ open, onClose }) {
             let response;
             if (field === "firstName" || field === "lastName") {
                 response = await updateUserName({ firstName: formData.firstName, lastName: formData.lastName });
-            } else if (field === "email") {
-                response = await updateUserEmail({ newEmail: formData.email });
-
-                if (response.message?.newEmail) {
-                    setFormErrors((prev) => ({ ...prev, email: response.message.newEmail }));
-                    return;
-                }
             } else if (field === "password") {
                 response = await updateUserPassword({ oldPassword: formData.oldPassword, newPassword: formData.newPassword });
 
@@ -84,7 +76,6 @@ export default function ProfileDialog({ open, onClose }) {
         }
     };
 
-
     const handleCancel = (field) => {
         setFormData((prev) => ({
             ...prev,
@@ -108,10 +99,13 @@ export default function ProfileDialog({ open, onClose }) {
                 </div>
                 <Divider sx={{ margin: "10px 0" }} />
 
-                {/* Name and Email section */}
-                {['firstName', 'lastName', 'email'].map((field) => (
+                {/* First Name and Last Name section */}
+                {[
+                    { field: "firstName", label: "First Name" },
+                    { field: "lastName", label: "Last Name" }
+                ].map(({ field, label }) => (
                     <div key={field}>
-                        <Typography variant="subtitle1">{field.charAt(0).toUpperCase() + field.slice(1)}</Typography>
+                        <Typography variant="subtitle1">{label}</Typography>
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <TextField
                                 name={field}
@@ -136,6 +130,17 @@ export default function ProfileDialog({ open, onClose }) {
                         </div>
                     </div>
                 ))}
+
+                <Divider sx={{ margin: "10px 0" }} />
+
+                {/* Email section - Display only, no edit */}
+                <Typography variant="subtitle1">Email</Typography>
+                <TextField
+                    fullWidth
+                    margin="dense"
+                    value={user?.email || ""}
+                    disabled
+                />
 
                 {/* Password section */}
                 {isUser && (
@@ -185,7 +190,6 @@ export default function ProfileDialog({ open, onClose }) {
             </DialogContent>
 
             {/* Close Dialog Button */}
-
             <DialogActions>
                 <Button onClick={onClose} color="secondary">Close</Button>
             </DialogActions>

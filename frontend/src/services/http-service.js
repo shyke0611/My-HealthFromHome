@@ -3,12 +3,10 @@ import axios from "axios";
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
 });
 
-const refreshAccessToken = async () => {
+export const refreshAccessToken = async () => {
   try {
     const response = await axiosInstance.post("/auth/refresh");
     return response.data;
@@ -41,14 +39,10 @@ export const setupAxiosInterceptors = (setUser) => {
         const refreshedToken = await refreshAccessToken();
 
         if (refreshedToken) {
-          console.log("Access token refreshed successfully!");
-          return axiosInstance.request(originalRequest);
+          return axiosInstance(originalRequest);
         } else {
-          console.warn("Refresh failed. Logging out user...");
-          if (setUser) {
-            setUser(null);
-          }
-          window.location.href = "/login"; 
+          if (setUser) setUser(null);
+          window.location.href = "/login";
           return Promise.reject(error);
         }
       }
