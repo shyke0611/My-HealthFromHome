@@ -6,7 +6,7 @@ import useAuth from "../hooks/useAuth";
 import { useSnackbar } from "notistack";
 
 export default function LoginPage() {
-  const { loginUser, verifyUser, forgotPassword, resendVerification, loading, email } = useAuth();
+  const { loginUser, oauthLoginUser, verifyUser, forgotPassword, resendVerification, loading, email } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
   const [showOtpDialog, setShowOtpDialog] = useState(false);
@@ -30,6 +30,20 @@ export default function LoginPage() {
       } else {
         enqueueSnackbar(response.message || "Login failed. Please try again.", { variant: "error" });
       }
+    }
+  };
+
+  const handleGoogleLogin = async (response) => {
+    const idToken = response.credential;
+    try {
+      const result = await oauthLoginUser(idToken);
+      if (result.success) {
+        enqueueSnackbar(result.message, { variant: "success" });
+      } else {
+        enqueueSnackbar(result.message || "Google login failed. Please try again.", { variant: "error" });
+      }
+    } catch (error) {
+      enqueueSnackbar("An error occurred while logging in with Google.", { variant: "error" });
     }
   };
 
@@ -86,6 +100,7 @@ export default function LoginPage() {
         extraLinkOnClick={() => setForgotPasswordOpen(true)}
         enabled={!loading}
         loading={loading}
+        onGoogleLogin={handleGoogleLogin}
       />
 
       <ForgotPasswordDialog

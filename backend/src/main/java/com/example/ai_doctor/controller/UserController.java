@@ -7,7 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.ai_doctor.dto.ChangeEmailDto;
+// import com.example.ai_doctor.dto.ChangeEmailDto;
 import com.example.ai_doctor.dto.ChangeNameDto;
 import com.example.ai_doctor.dto.ChangePasswordDto;
 import com.example.ai_doctor.model.User;
@@ -30,27 +30,27 @@ public class UserController {
         this.messageSource = messageSource;
     }
 
-    @PutMapping("/change-email")
-    public ResponseEntity<?> changeEmail(@AuthenticationPrincipal User user, @Valid @RequestBody ChangeEmailDto changeEmailDto) {
-        String newEmail = changeEmailDto.getNewEmail();
+    // @PutMapping("/change-email")
+    // public ResponseEntity<?> changeEmail(@AuthenticationPrincipal User user, @Valid @RequestBody ChangeEmailDto changeEmailDto) {
+    //     String newEmail = changeEmailDto.getNewEmail();
 
-        if (!userService.isValidNewEmail(user, newEmail)) {
-            if (user.getEmail().equalsIgnoreCase(newEmail)) {
-                return ApiResponseBuilder.buildFieldError(HttpStatus.BAD_REQUEST, "email",
-                        messageSource.getMessage("Error.user.sameEmail", null, Locale.getDefault()));
-            }
-            return ApiResponseBuilder.buildFieldError(HttpStatus.CONFLICT, "email",
-                    messageSource.getMessage("Conflict.user.email", null, Locale.getDefault()));
-        }
+    //     if (!userService.isValidNewEmail(user, newEmail)) {
+    //         if (user.getEmail().equalsIgnoreCase(newEmail)) {
+    //             return ApiResponseBuilder.buildFieldError(HttpStatus.BAD_REQUEST, "email",
+    //                     messageSource.getMessage("Error.user.sameEmail", null, Locale.getDefault()));
+    //         }
+    //         return ApiResponseBuilder.buildFieldError(HttpStatus.CONFLICT, "email",
+    //                 messageSource.getMessage("Conflict.user.email", null, Locale.getDefault()));
+    //     }
 
-        boolean success = userService.changeEmail(user, changeEmailDto);
-        if (!success) {
-            return ApiResponseBuilder.build(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update email.");
-        }
+    //     boolean success = userService.changeEmail(user, changeEmailDto);
+    //     if (!success) {
+    //         return ApiResponseBuilder.build(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update email.");
+    //     }
 
-        return ApiResponseBuilder.build(HttpStatus.OK,
-                messageSource.getMessage("Success.user.changeEmail", null, Locale.getDefault()));
-    }
+    //     return ApiResponseBuilder.build(HttpStatus.OK,
+    //             messageSource.getMessage("Success.user.changeEmail", null, Locale.getDefault()));
+    // }
 
     @PutMapping("/change-name")
     public ResponseEntity<?> changeName(@AuthenticationPrincipal User user, @Valid @RequestBody ChangeNameDto changeNameDto) {

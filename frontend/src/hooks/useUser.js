@@ -14,13 +14,13 @@ export default function useUser() {
     return response;
   };
 
-  const updateUserEmail = async (data) => {
-    const response = await protectedApi.updateUserEmail(data);
-    if (response.success) {
-      setUser((prevUser) => ({ ...prevUser, email: data.newEmail }));
-    }
-    return response;
-  };
+//   const updateUserEmail = async (data) => {
+//     const response = await protectedApi.updateUserEmail(data);
+//     if (response.success) {
+//       setUser((prevUser) => ({ ...prevUser, email: data.newEmail }));
+//     }
+//     return response;
+//   };
 
   const updateUserPassword = async (data) => {
     return await protectedApi.updateUserPassword(data);
@@ -28,7 +28,7 @@ export default function useUser() {
 
   return {
     updateUserName,
-    updateUserEmail,
+    // updateUserEmail,
     updateUserPassword,
   };
 }

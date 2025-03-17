@@ -2,14 +2,13 @@ package com.example.ai_doctor.controller;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import com.example.ai_doctor.dto.ResetPasswordDto;
 import com.example.ai_doctor.dto.UserLoginDto;
 import com.example.ai_doctor.dto.UserRegistrationDto;
@@ -19,8 +18,8 @@ import com.example.ai_doctor.repository.UserRepository;
 import com.example.ai_doctor.responses.UserResponse;
 import com.example.ai_doctor.service.AuthService;
 import com.example.ai_doctor.service.JwtService;
+import com.example.ai_doctor.service.OAuth2UserServiceImpl;
 import com.example.ai_doctor.util.ApiResponseBuilder;
-
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -31,25 +30,57 @@ public class AuthController {
     private final AuthService authService;
     private final MessageSource messageSource;
     private final UserRepository userRepository;
+    private final OAuth2UserServiceImpl oAuth2UserService;
 
     public AuthController(JwtService jwtService, AuthService authService, MessageSource messageSource,
-            UserRepository userRepository) {
+            UserRepository userRepository, OAuth2UserServiceImpl oAuth2UserService) {
         this.jwtService = jwtService;
         this.authService = authService;
         this.messageSource = messageSource;
         this.userRepository = userRepository;
+        this.oAuth2UserService = oAuth2UserService;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationDto userRegDto) {
-        if (userRepository.existsByEmail(userRegDto.getEmail())) {
-            return ApiResponseBuilder.buildFieldError(HttpStatus.CONFLICT, "email",
-                    messageSource.getMessage("Unique.user.email", null, Locale.getDefault()));
+        try {
+            authService.signup(userRegDto);
+            return ApiResponseBuilder.build(HttpStatus.CREATED,
+                    messageSource.getMessage("Success.user.registered", null, Locale.getDefault()));
+        } catch (RuntimeException e) {
+            return ApiResponseBuilder.buildFieldError(HttpStatus.CONFLICT, "email", e.getMessage());
         }
-        CompletableFuture.runAsync(() -> authService.signup(userRegDto));
-        return ApiResponseBuilder.build(HttpStatus.CREATED,
-                messageSource.getMessage("Success.user.registered", null, Locale.getDefault()));
+    }
+    
+    @PostMapping("/oauth/login")
+    public ResponseEntity<?> oauthLogin(@RequestBody Map<String, String> requestBody, HttpServletResponse response) {
+        try {
+            String idToken = requestBody.get("id_token");
+        if (idToken == null || idToken.isEmpty()) {
+            return ApiResponseBuilder.build(HttpStatus.BAD_REQUEST, "Missing ID Token");
+        }
 
+            User user = oAuth2UserService.processOAuthUser(idToken);
+            String accessToken = jwtService.generateAccessToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+
+            response.addCookie(jwtService.generateAccessCookie(accessToken));
+            response.addCookie(jwtService.generateRefreshCookie(refreshToken));
+
+            UserResponse userResponse = new UserResponse(
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail(),
+                    user.getRole().name());
+
+                    return ApiResponseBuilder.build(
+                        HttpStatus.OK,
+                        messageSource.getMessage("Success.user.login", null, Locale.getDefault()),
+                        userResponse);
+
+        } catch (Exception e) {
+            return ApiResponseBuilder.build(HttpStatus.UNAUTHORIZED, "Invalid OAuth Token");
+        }
     }
 
     @PostMapping("/login")

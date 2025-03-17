@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Container,
@@ -9,6 +9,7 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
+  Divider,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
@@ -28,9 +29,25 @@ export default function AuthForm({
   extraLinkOnClick,
   enabled,
   loading,
+  onGoogleLogin,
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
+  
+  useEffect(() => {
+    if (title === "Login" && window.google) {
+      window.google.accounts.id.initialize({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+        callback: onGoogleLogin,
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-signin-button"),
+        { theme: "outline", size: "large", width: "100%" }
+      );
+    }
+  }, [title, onGoogleLogin]);
+  
   const handleTogglePassword = () => setShowPassword(!showPassword);
 
   const handleSubmit = (event) => {
@@ -85,16 +102,8 @@ export default function AuthForm({
                   }
                 />
               ))}
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                disabled={!enabled}
-                className="auth-button"
-              >
-                {loading ? <CircularProgress size={24} color="inherit" /> : buttonText}
-              </Button>
+
+              {/* Forgot Password */}
               {extraLinkText && (
                 <Typography variant="body2" className="auth-extra-link">
                   <Link
@@ -108,9 +117,29 @@ export default function AuthForm({
                   </Link>
                 </Typography>
               )}
+
               <Typography variant="body2" className="auth-link">
                 {linkMessage} <Link to={linkTo}>{linkText}</Link>
               </Typography>
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                disabled={!enabled}
+                className="auth-button"
+              >
+                {loading ? <CircularProgress size={24} color="inherit" /> : buttonText}
+              </Button>
+
+              {/* Log in with Google Button on Login Page */}
+              {title === "Login" && (
+                <>
+                  <Divider sx={{ my: 2 }}>OR</Divider>
+                  <div id="google-signin-button"></div>
+                </>
+              )}
             </Box>
           </Box>
         </Box>

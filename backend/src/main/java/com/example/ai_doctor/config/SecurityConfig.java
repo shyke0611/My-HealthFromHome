@@ -29,6 +29,9 @@ public class SecurityConfig {
         @Value("${backend.dev.url}")
         private String backendDevUrl;
 
+        @Value("${GOOGLE_CLIENT_ID}")
+        private String clientId;
+
         public SecurityConfig(
                         JwtAuthFilter jwtAuthenticationFilter,
                         AuthenticationProvider authenticationProvider) {
@@ -43,6 +46,7 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers("/auth/**").permitAll()
+                                                .requestMatchers("/oauth2/**").permitAll()
                                                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                                                 .requestMatchers("/user/**").hasAuthority("ROLE_USER")
                                                 .anyRequest().authenticated())
@@ -60,6 +64,7 @@ public class SecurityConfig {
                                                 .frameOptions(frameOptions -> frameOptions.sameOrigin())
                                                 .contentSecurityPolicy(
                                                                 csp -> csp.policyDirectives("script-src 'self'")));
+                            
 
                 return http.build();
         }

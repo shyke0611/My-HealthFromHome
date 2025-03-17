@@ -1,6 +1,6 @@
 package com.example.ai_doctor.service;
 
-import com.example.ai_doctor.dto.ChangeEmailDto;
+// import com.example.ai_doctor.dto.ChangeEmailDto;
 import com.example.ai_doctor.dto.ChangeNameDto;
 import com.example.ai_doctor.dto.ChangePasswordDto;
 import com.example.ai_doctor.model.User;
@@ -27,17 +27,17 @@ public class UserService {
         return !userRepository.existsByEmail(newEmail);
     }
     
-    public boolean changeEmail(User user, ChangeEmailDto changeEmailDto) {
-        String newEmail = changeEmailDto.getNewEmail();
+    // public boolean changeEmail(User user, ChangeEmailDto changeEmailDto) {
+    //     String newEmail = changeEmailDto.getNewEmail();
     
-        if (!isValidNewEmail(user, newEmail)) {
-            return false;
-        }
+    //     if (!isValidNewEmail(user, newEmail)) {
+    //         return false;
+    //     }
     
-        user.setEmail(newEmail);
-        userRepository.save(user);
-        return true;
-    }
+    //     user.setEmail(newEmail);
+    //     userRepository.save(user);
+    //     return true;
+    // }
     
 
      public void changeName(User user, ChangeNameDto changeNameDto) {
