@@ -48,6 +48,8 @@ public class User implements UserDetails {
 
     private Role role;
 
+    private boolean oauthUser; 
+
     public User(String email, String password, String firstName, String lastName, Role role) {
         this.email = email;
         this.password = password;
@@ -57,6 +59,14 @@ public class User implements UserDetails {
     }
 
     public User() {
+    }
+
+    public boolean isOauthUser() {
+        return oauthUser;
+    }
+
+    public void setOauthUser(boolean oauthUser) {
+        this.oauthUser = oauthUser;
     }
 
     @Override

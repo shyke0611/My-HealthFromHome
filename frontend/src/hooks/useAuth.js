@@ -32,6 +32,17 @@ export default function useAuth() {
     return response;
   };
 
+  const oauthLoginUser = async (idToken) => {
+    setLoading(true);
+    const response = await publicApi.oauthLogin(idToken);
+      
+      if (response.success) {
+        setUser(response.data.user); 
+        navigate("/chat");
+      }
+      return response;
+  };
+
   const logoutUser = async () => {
     const response = await publicApi.logoutUser();
     if (response.success) {
@@ -64,6 +75,7 @@ export default function useAuth() {
   return {
     registerUser,
     loginUser,
+    oauthLoginUser,
     logoutUser,
     verifyUser,
     resendVerification,

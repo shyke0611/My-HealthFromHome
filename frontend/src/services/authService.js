@@ -5,6 +5,8 @@ const authService = {
 
   loginUser: (loginData) => apiRequest({ method: "POST", url: "/auth/login", data: loginData }),
 
+  oauthLogin: (idToken) => apiRequest({ method: "POST", url: "/auth/oauth/login", data: { id_token: idToken }, credentials: "include", }),
+
   logoutUser: () => apiRequest({ method: "POST", url: "/auth/logout" }),
 
   verifyUser: (verifyData) => apiRequest({ method: "POST", url: "/auth/verify", data: verifyData }),

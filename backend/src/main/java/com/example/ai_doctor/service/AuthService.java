@@ -20,8 +20,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,13 +48,32 @@ public class AuthService {
     }
 
     public void signup(UserRegistrationDto input) {
-        User user = new User(input.getEmail(), passwordEncoder.encode(input.getPassword()), input.getFirstName(),
-                input.getLastName(), Role.USER);
+        Optional<User> existingUser = userRepository.findByEmail(input.getEmail());
+    
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+    
+            if (!user.isOauthUser()) {
+                throw new RuntimeException("Email is already registered.");
+            }
+    
+            user.setFirstName(input.getFirstName());
+            user.setLastName(input.getLastName());
+            user.setPassword(passwordEncoder.encode(input.getPassword()));
+            user.setOauthUser(false);
+            userRepository.save(user);
+            
+            return;
+        }
+    
+        User user = new User(input.getEmail(), passwordEncoder.encode(input.getPassword()), 
+                             input.getFirstName(), input.getLastName(), User.Role.USER);
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
         user.setEnabled(false);
-        sendVerificationEmail(user);
         userRepository.save(user);
+        CompletableFuture.runAsync(() -> sendVerificationEmail(user));
+
     }
 
     public boolean authenticate(UserLoginDto input) {
